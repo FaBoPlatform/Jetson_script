@@ -15,7 +15,7 @@ SUDO_PID=$!
 sudo apt-get update
 
 # 必要なパッケージのインストール
-sudo apt-get install -y python3-pip curl libopenblas-base libopenblas-dev libjpeg-dev zlib1g-dev libpng-dev
+sudo apt-get install -y python3-pip curl libopenblas-base libopenblas-dev libjpeg-dev zlib1g-dev libpng-dev python3-libnvinfer
 
 # Pythonパッケージのインストール
 pip3 install smbus==1.1.post2 setuptools==59.6.0 wheel==0.37.1 testresources==2.0.1 pytz==2022.7.1 
@@ -48,6 +48,13 @@ export BUILD_VERSION=0.16.1
 python3 setup.py install --user
 cd ..
 
+# Torch2trt
+git clone https://github.com/NVIDIA-AI-IOT/torch2trt
+cd torch2trt
+pip install --install-option="--plugins" .
+cd ..
+
+# Nodejsのインストール
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - 
 sudo apt-get install -y nodejs 
 
