@@ -54,6 +54,9 @@ cd torch2trt
 pip install --install-option="--plugins" .
 cd ..
 
+# Resnet18, Resnet50の事前ダウンロード
+python3 -c "import torchvision; model = torchvision.models.resnet18(pretrained=True); model = torchvision.models.resnet50(pretrained=True)"
+
 # Nodejsのインストール
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - 
 sudo apt-get install -y nodejs 
