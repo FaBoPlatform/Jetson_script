@@ -18,7 +18,7 @@ sudo apt-get update
 sudo apt-get install -y python3-pip curl libopenblas-base libopenblas-dev libjpeg-dev zlib1g-dev libpng-dev python3-libnvinfer python3-packaging
 
 # Pythonパッケージのインストール
-pip3 install smbus==1.1.post2 setuptools==59.6.0 wheel==0.37.1 testresources==2.0.1 pytz==2022.7.1 
+pip install smbus==1.1.post2 setuptools==59.6.0 wheel==0.37.1 testresources==2.0.1 pytz==2022.7.1 
 
 # FaBo PCA9685のインストール
 git clone https://github.com/FaBoPlatform/FaBoPWM-PCA9685-Python
