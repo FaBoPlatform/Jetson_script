@@ -15,7 +15,7 @@ SUDO_PID=$!
 sudo apt-get update
 
 # 必要なパッケージのインストール
-sudo apt-get install -y python3-pip curl libopenblas-base libopenblas-dev libjpeg-dev zlib1g-dev libpng-dev python3-libnvinfer
+sudo apt-get install -y python3-pip curl libopenblas-base libopenblas-dev libjpeg-dev zlib1g-dev libpng-dev python3-libnvinfer python3-packaging
 
 # Pythonパッケージのインストール
 pip3 install smbus==1.1.post2 setuptools==59.6.0 wheel==0.37.1 testresources==2.0.1 pytz==2022.7.1 
@@ -28,7 +28,10 @@ pip3 install FaBoPWM-PCA9685-Python/
 git clone https://github.com/FaBoPlatform/jetracer
 cd jetracer
 pip install -e .
+git checkout AI86
 cp -r notebooks ~/notebooks
+git checkout Race24
+cp -r notebooks ~/notebooks_race
 cd ..
 
 # JetCamのインストール
