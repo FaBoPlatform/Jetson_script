@@ -15,21 +15,38 @@ sudo -v
 ( while true; do sudo -n true; sleep 60; done ) &
 SUDO_PID=$!
 
+TMP=$(mktemp -d)
+
 # ===== APT =====
 sudo apt-get update
 sudo apt-get install -y \
     python3-pip curl build-essential \
     libopenblas-base libopenblas-dev \
     libjpeg-dev zlib1g-dev libpng-dev \
-    python3-libnvinfer python3-packaging
+    python3-libnvinfer python3-packaging \
+    cuda-runtime-12-6 libcublas-12-6 \
+    libcublas-dev-12-6 cuda-cupti-12-6 
 
 # ===== Miniconda (非対話) =====
 MINI="$HOME/miniconda"
 if [ ! -d "$MINI" ]; then
-  wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O /tmp/miniconda.sh
-  bash /tmp/miniconda.sh -b -p "$MINI"
+  wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O "$TMP/miniconda.sh"
+  bash "$TMP/miniconda.sh" -b -p "$MINI"
 fi
 source "$MINI/etc/profile.d/conda.sh"
+
+# ~/.bashrc に一度だけ Miniconda 初期化を追記
+BASHRC_TAG="### Miniconda init (robot script)"
+grep -qxF "$BASHRC_TAG" "$HOME/.bashrc" || cat >>"$HOME/.bashrc" <<'BASHRC'
+### Miniconda init (robot script)
+if [ -f "$HOME/miniconda/etc/profile.d/conda.sh" ]; then
+  . "$HOME/miniconda/etc/profile.d/conda.sh"
+  export PATH="$HOME/miniconda/bin:$PATH"
+fi
+### End Miniconda init
+BASHRC
+
+source "$HOME/.bashrc"
 
 conda create -y -n robot python=3.10
 conda activate robot
@@ -40,32 +57,35 @@ cd ~/lerobot
 pip install -e ".[feetech]"
 
 # ===== OttherARM by FaBo ====
+cd ~/
 git clone https://github.com/FaBoPlatform/otterarm/ ~/otter || true
 
-# ===== conda パッケージ =====
-conda install -y -c conda-forge ffmpeg libpng jpeg
-
-# ===== opencv パッケージ =====
+# ===== OpenCV は pip で入れる =====
 conda install -y -c conda-forge "opencv>=4.10.0.84"  
-conda remove opencv   # Uninstall OpenCV 
-pip3 install opencv-python==4.10.0.84 
+conda remove opencv
+pip3 install opencv-python==4.10.0.84
+
+# ===== conda パッケージ =====
+conda install -y -c conda-forge ffmpeg libpng 
 
 # ===== pip パッケージ =====
-pip install --upgrade pip wheel
+pip3 install --upgrade pip wheel
 
 # (PyTorch 系は NumPy<2 が必須)
-pip install "numpy<2" --no-cache-dir
+pip3 install "numpy<2" --no-cache-dir
 
 # --- JetPack 6.2 用 GPU wheel (2.5.0 固定) ---
-pip3 uninstall -y torch torchvision || true   # ← パッケージ名修正 & エラー無視
+pip3 uninstall -y torch torchvision || true 
 
-# PyTorchのインストール
-wget http://jetson.webredirect.org/jp6/cu126/+f/5cf/9ed17e35cb752/torch-2.5.0-cp310-cp310-linux_aarch64.whl#sha256=5cf9ed17e35cb7523812aeda9e7d6353c437048c5a6df1dc6617650333049092
-pip3 install torch-2.5.0-cp310-cp310-linux_aarch64.whl
+# ---- PyTorch 2.5.0 (CUDA 12.6, aarch64) ----
+wget -O "$TMP/torch-2.5.0-cp310-cp310-linux_aarch64.whl" \
+  http://jetson.webredirect.org/jp6/cu126/+f/5cf/9ed17e35cb752/torch-2.5.0-cp310-cp310-linux_aarch64.whl
+pip3 install "$TMP/torch-2.5.0-cp310-cp310-linux_aarch64.whl"
 
-# TorchVisionのインストール
-wget http://jetson.webredirect.org/jp6/cu126/+f/5f9/67f920de3953f/torchvision-0.20.0-cp310-cp310-linux_aarch64.whl#sha256=5f967f920de3953f2a39d95154b1feffd5ccc06b4589e51540dc070021a9adb9
-pip3 install torchvision-0.20.0-cp310-cp310-linux_aarch64.whl 
+# ---- TorchVision 0.20.0 (ビルド済み aarch64) ----
+wget -O "$TMP/torchvision-0.20.0-cp310-cp310-linux_aarch64.whl" \
+  http://jetson.webredirect.org/jp6/cu126/+f/5f9/67f920de3953f/torchvision-0.20.0-cp310-cp310-linux_aarch64.whl
+pip3 install "$TMP/torchvision-0.20.0-cp310-cp310-linux_aarch64.whl"
 
 # Dynamixel SDK
 pip3 install dynamixel-sdk
@@ -98,6 +118,7 @@ PY
 
 echo "✅ Installation completed."
 
+rm -rf "$TMP"
 
 # USB Speakerの認識
 # pactl list short sinks
