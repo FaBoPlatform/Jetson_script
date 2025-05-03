@@ -36,7 +36,8 @@ conda activate robot
  
 # ===== lerobot by Huggingface=====
 git clone https://github.com/huggingface/lerobot ~/lerobot || true
-pip install -e ~/lerobot
+cd ~/lerobot
+pip install -e ".[feetech]"
 
 # ===== OttherARM by FaBo ====
 git clone https://github.com/FaBoPlatform/otterarm/ ~/otter || true
@@ -96,3 +97,11 @@ print("✅  CUDA が正常に認識されました")
 PY
 
 echo "✅ Installation completed."
+
+
+# USB Speakerの認識
+# pactl list short sinks
+# 0   alsa_output.platform-sound.analog-stereo    module-alsa-card.c  s16le 2ch 44100Hz   SUSPENDED
+# 1   alsa_output.usb-C-Media_INC._USB_Sound_Device-00.analog-stereo  module-alsa-card.c  s16le 2ch 44100Hz   RUNNING
+# pactl set-default-sink alsa_output.usb-C-Media_INC._USB_Sound_Device-00.analog-stereo
+# spd-say "warmup record"
