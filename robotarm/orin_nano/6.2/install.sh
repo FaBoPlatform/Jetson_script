@@ -31,8 +31,8 @@ if [ ! -d "$MINI" ]; then
 fi
 source "$MINI/etc/profile.d/conda.sh"
 
-conda create -y -n robotarm python=3.10
-conda activate robotarm
+conda create -y -n robot python=3.10
+conda activate robot
  
 # ===== lerobot by Huggingface=====
 git clone https://github.com/huggingface/lerobot ~/lerobot || true
