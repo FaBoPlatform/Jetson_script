@@ -5,11 +5,11 @@ Install script for Jetson
 
 Support platform
 
-- JetRacer
+- FaBo JetRacer
 
 ## Robot ARM install script
 
 Support platform
 
 - LeRobot
-- OtterARM
+- FaBo OtterARM
