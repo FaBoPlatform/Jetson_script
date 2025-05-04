@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Jetson Orin Nano
+# Jetson Orin Nano, AGX Orin
 # JetPack6.2用
 # FaBo RobotARMのInstall Script
 #!/usr/bin/env bash
