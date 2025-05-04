@@ -6,12 +6,13 @@ Install script for Jetson
 Support platform
 
 - FaBo JetRacer
-- - JetPack6.2
+  - JetPack6.2
 
 ## Robot ARM install script
 
 Support platform
 
 - LeRobot
+  - JetPack6.2
 - FaBo OtterARM
-- - - JetPack6.2
+  - JetPack6.2
