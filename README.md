@@ -6,7 +6,7 @@ Install script for Jetson
 Support platform
 
 - FaBo JetRacer
-  - JetPack6.2
+  - [JetPack6.2](https://github.com/FaBoPlatform/Jetson_script/blob/main/jetracer/orin_nano/6.2/install.sh)
 
 ## Robot ARM install script
 
