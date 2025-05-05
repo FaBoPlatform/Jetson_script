@@ -61,9 +61,9 @@ cd ~/
 git clone https://github.com/FaBoPlatform/otterarm/ ~/otter || true
 
 # ===== OpenCV は pip で入れる =====
-conda install -y -c conda-forge "opencv>=4.10.0.84"  
-conda remove opencv
-pip3 install opencv-python==4.10.0.84
+conda install -y -c conda-forge "opencv>=4.10.0.84"
+conda remove -y opencv        # ← 自動で Yes
+pip3 install --no-cache-dir opencv-python==4.10.0.84
 
 # ===== conda パッケージ =====
 conda install -y -c conda-forge ffmpeg libpng 
