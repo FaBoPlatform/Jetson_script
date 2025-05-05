@@ -51,16 +51,13 @@ source "$HOME/.bashrc"
 eval "$(conda shell.bash hook)"
 
 conda create -y -n robot python=3.10
-conda activate robot
+conda activate otter
  
-# ===== lerobot by Huggingface=====
-git clone https://github.com/huggingface/lerobot ~/lerobot || true
-cd ~/lerobot
-pip install -e ".[feetech]"
-
 # ===== OttherARM by FaBo ====
 cd ~/
 git clone https://github.com/FaBoPlatform/otterarm/ ~/otter || true
+cd ~/otter
+pip intsall -e .
 
 # ===== OpenCV は pip で入れる =====
 conda install -y -c conda-forge "opencv>=4.10.0.84"
