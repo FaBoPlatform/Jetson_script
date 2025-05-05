@@ -13,6 +13,6 @@ Support platform
 Support platform
 
 - LeRobot
-  - JetPack6.2
+  - [JetPack6.2](https://github.com/FaBoPlatform/Jetson_script/blob/main/lerobot/orin_nano/6.2/install.sh)
 - FaBo OtterARM
-  - JetPack6.2
+  - [JetPack6.2](https://github.com/FaBoPlatform/Jetson_script/blob/main/otter_arm/orin_nano/6.2/install.sh)
