@@ -48,6 +48,8 @@ BASHRC
 
 source "$HOME/.bashrc"
 
+eval "$(conda shell.bash hook)"
+
 conda create -y -n robot python=3.10
 conda activate robot
  
