@@ -2,7 +2,7 @@
 
 # Jetson Orin Nano, AGX Orin
 # JetPack6.2用
-# FaBo RobotARMのInstall Script
+# LeRobotのInstall Script
 #!/usr/bin/env bash
 
 set -euo pipefail
