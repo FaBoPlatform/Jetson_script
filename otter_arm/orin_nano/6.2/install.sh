@@ -50,7 +50,7 @@ source "$HOME/.bashrc"
 
 eval "$(conda shell.bash hook)"
 
-conda create -y -n robot python=3.10
+conda create -y -n otter python=3.10
 conda activate otter
  
 # ===== OttherARM by FaBo ====
