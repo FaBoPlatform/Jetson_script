@@ -188,7 +188,7 @@ Description=ip_stats
 Type=simple
 User=${USER_NAME}
 WorkingDirectory=${HOME_DIR}
-ExecStart=/usr/bin/python3 ${HOME_DIR}/jetracer/utils/stats.py
+ExecStart=/usr/bin/python3 ${HOME_DIR}/jetracer/utils/wifi_stats.py
 Restart=always
 RestartSec=10
 
