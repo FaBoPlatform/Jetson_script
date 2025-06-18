@@ -172,6 +172,14 @@ sudo systemctl start jupyterlab.service
 
 sudo pip3 install Adafruit-SSD1306==1.6.2
 
+# ~/.bashrc に JETSON_MODEL_NAME を追加
+if ! grep -q "^export JETSON_MODEL_NAME=JETSON_ORIN_NANO$" ~/.bashrc; then
+    echo 'export JETSON_MODEL_NAME=JETSON_ORIN_NANO' >> ~/.bashrc
+    echo "環境変数 JETSON_MODEL_NAME=JETSON_ORIN_NANO を ~/.bashrc に追加しました。"
+else
+    echo "環境変数 JETSON_MODEL_NAME は ~/.bashrc に既に設定済みです。"
+fi
+
 # サービスファイルの内容を作成
 SERVICE_FILE_CONTENT="[Unit]
 Description=ip_stats
