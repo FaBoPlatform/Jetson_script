@@ -32,9 +32,6 @@ cd jetracer
 pip install -e .
 git checkout AI86
 cp -r notebooks ~/notebooks
-git checkout Race24
-cp -r notebooks ~/notebooks_race
-cd ..
 
 # JetCamのインストール
 git clone https://github.com/NVIDIA-AI-IOT/jetcam
@@ -138,7 +135,7 @@ fi
 # JupyterLab の起動を systemd サービスとして設定
 USER_NAME="jetson"  # 実際のユーザー名に変更してください
 HOME_DIR="/home/jetson"  # 実際のホームディレクトリに変更してください
-
+JUPYTER_HOME_DIR = "/home/jetson/notebooks/"
 # サービスファイルの内容を作成
 SERVICE_FILE_CONTENT="[Unit]
 Description=JupyterLab
@@ -147,7 +144,7 @@ Description=JupyterLab
 Type=simple
 User=${USER_NAME}
 WorkingDirectory=${HOME_DIR}/jetracer/utils
-ExecStart=$(which jupyter) lab --ip=0.0.0.0 --no-browser --ServerApp.root_dir=/ --LabApp.default_url=\"/lab?file-browser-path=${HOME_DIR}\"
+ExecStart=$(which jupyter) lab --ip=0.0.0.0 --no-browser --ServerApp.root_dir=/ --LabApp.default_url=\"/lab?file-browser-path=${JUPYTER_HOME_DIR}\"
 Restart=always
 RestartSec=10
 
