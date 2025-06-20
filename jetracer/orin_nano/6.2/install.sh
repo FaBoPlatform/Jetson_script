@@ -135,7 +135,7 @@ fi
 # JupyterLab の起動を systemd サービスとして設定
 USER_NAME="jetson"  # 実際のユーザー名に変更してください
 HOME_DIR="/home/jetson"  # 実際のホームディレクトリに変更してください
-JUPYTER_HOME_DIR = "/home/jetson/notebooks/"
+JUPYTER_HOME_DIR="/home/jetson/notebooks/"
 # サービスファイルの内容を作成
 SERVICE_FILE_CONTENT="[Unit]
 Description=JupyterLab
