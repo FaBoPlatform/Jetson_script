@@ -208,3 +208,5 @@ sudo systemctl enable ip_status.service
 echo "IP Status  サービスを開始しています..."
 sudo systemctl start ip_status.service
 
+# IMX219カメラの有効化(手動)
+# sudo /opt/nvidia/jetson-io/jetson-io.py で、imx219 dualを有効化する
