@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Jetson Orin Nano
-# JetPack6.2用
+# JetPack6.2.1用
 # FaBo JetFormer, FaBo JetRacerのInstall Script
 
 # スクリプト開始時に sudo のパスワードを一度入力
