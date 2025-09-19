@@ -44,7 +44,7 @@ wget -O "$TMP/torch-2.8.0-cp310-cp310-linux_aarch64.whl" \
   https://pypi.jetson-ai-lab.io/jp6/cu129/+f/72e/b2fce22ddccb4/torch-2.8.0-cp310-cp310-linux_aarch64.whl
 pip3 install "$TMP/torch-2.8.0-cp310-cp310-linux_aarch64.whl"
 
-# ---- TorchVision 0.20.0 (ビルド済み aarch64) ----
+# ---- TorchVision 0.23.0 (ビルド済み aarch64) ----
 wget -O "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl" \
   https://pypi.jetson-ai-lab.io/jp6/cu129/+f/565/6a8a5e3672c15/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl
 pip3 install "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
