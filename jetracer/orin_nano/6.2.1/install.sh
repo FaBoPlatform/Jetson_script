@@ -13,7 +13,7 @@ JUPYTER_HOME_DIR="${JUPYTER_HOME_DIR:-${HOME_DIR}/notebooks/}"
 
 # $TMP を用意（未設定なら自動作成）。作成した場合のみ後で削除する。
 if [[ -z "${TMP:-}" ]]; then
-  TMP="$(mktemp -d -t jetsetup.621)"
+  TMP="$(mktemp -d -t jetsetup.XXXXXX)"
   TMP_CREATED=1
 else
   mkdir -p "$TMP"
