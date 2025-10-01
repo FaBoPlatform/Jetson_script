@@ -95,41 +95,81 @@ python3 -m pip install "git+https://github.com/NVIDIA-AI-IOT/jetcam.git"
 # 6) PyTorch / TorchVision (aarch64 wheels を $TMP に保存してからインストール)
 ###############################################################################
 wget -O "$TMP/torch-2.8.0-cp310-cp310-linux_aarch64.whl" \
-  "https://pypi.jetson-ai-lab.io/jp6/cu129/+f/72e/b2fce22ddccb4/torch-2.8.0-cp310-cp310-linux_aarch64.whl"
+  "https://pypi.jetson-ai-lab.io/jp6/cu126/+f/590/92ab729aee2b8/torch-2.8.0-cp310-cp310-linux_aarch64.whl"
 python3 -m pip install "$TMP/torch-2.8.0-cp310-cp310-linux_aarch64.whl"
 
 wget -O "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl" \
-  "https://pypi.jetson-ai-lab.io/jp6/cu129/+f/565/6a8a5e3672c15/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
+  "https://pypi.jetson-ai-lab.io/jp6/cu126/+f/1c0/3de08a69e9554/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
 python3 -m pip install "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
 
+
 ###############################################################################
-# 7) torch2trt（$TMP に一時 clone → インストール）
+# 7) cuDSS（libcudss0-cuda-12 系）
 ###############################################################################
+# Keyring と repo を（未設定時のみ）追加
+if [ ! -f /usr/share/keyrings/cuda-archive-keyring.gpg ]; then
+  sudo mkdir -p /usr/share/keyrings
+  sudo wget -O /usr/share/keyrings/cuda-archive-keyring.gpg \
+    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/cuda-archive-keyring.gpg
+fi
+
+if [ ! -f /etc/apt/sources.list.d/cuda-ubuntu2204-arm64.list ]; then
+  sudo mkdir -p /etc/apt/sources.list.d
+  echo 'deb [signed-by=/usr/share/keyrings/cuda-archive-keyring.gpg arch=arm64] https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/ /' | \
+    sudo tee /etc/apt/sources.list.d/cuda-ubuntu2204-arm64.list > /dev/null
+fi
+
+# 参照確認（存在しないときは何も出ない）
+grep -n '.' /etc/apt/sources.list.d/cuda-ubuntu2204-arm64.list || true
+
+sudo apt-get update
+# cudss/cudss-cuda-12 は環境により未提供な場合があるため失敗しても継続
+sudo apt-get install -y \
+  libcudss0-cuda-12 libcudss0-dev-cuda-12 libcudss0-static-cuda-12 \
+  cudss cudss-cuda-12 || true
+
+###############################################################################
+# 8) torch2trt（$TMP に一時 clone → インストール）
+###############################################################################
+sudo apt-get install -y cmake build-essential libnvinfer-dev
+
 git clone https://github.com/NVIDIA-AI-IOT/torch2trt "$TMP/torch2trt"
 cd "$TMP/torch2trt"
-python3 -m pip install --upgrade "Cython<3" || true
-python3 -m pip install --install-option="--plugins" .
+
+
+# PATH 永続化（重複回避）
+if ! grep -q '^export PATH=/usr/local/cuda/bin:\$PATH$' "$HOME_DIR/.bashrc"; then
+  echo 'export PATH=/usr/local/cuda/bin:$PATH' >> "$HOME_DIR/.bashrc"
+fi
+export PATH="/usr/local/cuda/bin:$PATH"
+
+# packaging / build ツール更新（ユーザー領域）
+python3 -m pip install --user -U packaging
+python3 -m pip install --user -U pip "setuptools>=70,<81" wheel
+
+# torch2trt Python パッケージ（ビルド分離なし）
+cd "$TMP/torch2trt"
+python3 -m pip install --user --no-build-isolation .
 cd "$HOME_DIR"
 
 ###############################################################################
-# 8) ResNet18 / 50 の事前ダウンロード（~/.cache に保存）
+# 9) ResNet18の事前ダウンロード（~/.cache に保存）
 ###############################################################################
 python3 - <<'PY'
 import torchvision
 # torchvision 0.23 の新API。重みをダウンロードしてローカルにキャッシュ
 torchvision.models.resnet18(weights="IMAGENET1K_V1")
-torchvision.models.resnet50(weights="IMAGENET1K_V1")
 PY
 
 ###############################################################################
-# 9) Node.js（セットアップスクリプトを $TMP に保存してから）
+# 10) Node.js（セットアップスクリプトを $TMP に保存してから）
 ###############################################################################
 curl -fsSL https://deb.nodesource.com/setup_20.x -o "$TMP/nodesource_setup.sh"
 sudo -E bash "$TMP/nodesource_setup.sh"
 sudo apt-get install -y nodejs
 
 ###############################################################################
-# 10) JupyterLab + クリック可能ウィジェット
+# 11) JupyterLab + クリック可能ウィジェット
 ###############################################################################
 python3 -m pip install "jupyter" "jupyterlab==3.2.9"
 # labmanager
@@ -142,7 +182,7 @@ python3 -m pip install "$TMP/jciw"
 jupyter labextension install "$TMP/jciw/js"
 
 ###############################################################################
-# 11) Jupyter 設定（パスワード/テーマ/保存設定）
+# 12) Jupyter 設定（パスワード/テーマ/保存設定）
 ###############################################################################
 # 既存設定を消す
 if [ -f "$HOME_DIR/.jupyter/jupyter_server_config.py" ]; then
@@ -203,7 +243,7 @@ else
 fi
 
 ###############################################################################
-# 12) systemd: JupyterLab サービス
+# 13) systemd: JupyterLab サービス
 ###############################################################################
 JUPYTER_BIN="$(command -v jupyter)"
 cat <<EOF | sudo tee /etc/systemd/system/jupyterlab.service > /dev/null
@@ -230,12 +270,12 @@ sudo systemctl start jupyterlab.service
 echo "JupyterLab サービスを開始しました。"
 
 ###############################################################################
-# 13) SSD1306
+# 14) SSD1306
 ###############################################################################
 sudo python3 -m pip install Adafruit-SSD1306==1.6.2
 
 ###############################################################################
-# 14) 環境変数
+# 15) 環境変数
 ###############################################################################
 if ! grep -q "^export JETSON_MODEL_NAME=JETSON_ORIN_NANO$" "$HOME_DIR/.bashrc"; then
   echo 'export JETSON_MODEL_NAME=JETSON_ORIN_NANO' >> "$HOME_DIR/.bashrc"
@@ -245,7 +285,7 @@ else
 fi
 
 ###############################################################################
-# 15) systemd: IP Status サービス
+# 16) systemd: IP Status サービス
 ###############################################################################
 cat <<EOF | sudo tee /etc/systemd/system/ip_status.service > /dev/null
 [Unit]
@@ -269,7 +309,7 @@ sudo systemctl start ip_status.service
 echo "IP Status サービスを開始しました。"
 
 ###############################################################################
-# 16) apt キャッシュを最後にクリーン
+# 17) apt キャッシュを最後にクリーン
 ###############################################################################
 sudo apt-get clean
 
