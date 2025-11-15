@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Jetson Orin Nano, AGX Orin
-# JetPack6.2用
+# JetPack6.2.1用
 # LeRobotのInstall Script
 #!/usr/bin/env bash
 
@@ -35,15 +35,16 @@ if [ ! -d "$MINI" ]; then
 fi
 source "$MINI/etc/profile.d/conda.sh"
 
-# ~/.bashrc に一度だけ Miniconda 初期化を追記
-BASHRC_TAG="### Miniconda init (robot script)"
-grep -qxF "$BASHRC_TAG" "$HOME/.bashrc" || cat >>"$HOME/.bashrc" <<'BASHRC'
-### Miniconda init (robot script)
+# ~/.bashrc に一度だけ lerobot 環境の自動有効化を追記
+LERO_TAG="### lerobot auto-activate (robot script)"
+grep -qxF "$LERO_TAG" "$HOME/.bashrc" || cat >>"$HOME/.bashrc" <<'BASHRC'
+### lerobot auto-activate (robot script)
+# Miniconda が使えるときだけ有効化する
 if [ -f "$HOME/miniconda/etc/profile.d/conda.sh" ]; then
   . "$HOME/miniconda/etc/profile.d/conda.sh"
-  export PATH="$HOME/miniconda/bin:$PATH"
+  conda activate lerobot
 fi
-### End Miniconda init
+### End lerobot auto-activate
 BASHRC
 
 source "$HOME/.bashrc"
