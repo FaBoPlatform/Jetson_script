@@ -50,6 +50,9 @@ source "$HOME/.bashrc"
 
 eval "$(conda shell.bash hook)"
 
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
 conda create -y -n lerobot python=3.10
 conda activate lerobot
  
