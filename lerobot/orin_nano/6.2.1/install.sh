@@ -89,6 +89,7 @@ python3 -m pip install "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
 
 # Dynamixel SDK
 pip3 install dynamixel-sdk
+pip3 install feetech-servo-sdk
 
 # モデルを事前ダウンロード
 python - <<'PY'
