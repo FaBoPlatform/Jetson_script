@@ -75,12 +75,12 @@ pip3 uninstall -y torch torchvision || true
 
 # -- Torch 2.8.0
 wget -O "$TMP/torch-2.8.0-cp310-cp310-linux_aarch64.whl" \
-  "https://pypi.jetson-ai-lab.io/jp6/cu126/+f/590/92ab729aee2b8/torch-2.8.0-cp310-cp310-linux_aarch64.whl"
+  "https://pypi.jetson-ai-lab.io/jp6/cu126/+f/62a/1beee9f2f1470/torch-2.8.0-cp310-cp310-linux_aarch64.whl"
 python3 -m pip install "$TMP/torch-2.8.0-cp310-cp310-linux_aarch64.whl"
 
 # -- Torchvision 0.23.0
 wget -O "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl" \
-  "https://pypi.jetson-ai-lab.io/jp6/cu126/+f/1c0/3de08a69e9554/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
+  "https://pypi.jetson-ai-lab.io/jp6/cu126/+f/907/c4c1933789645/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
 python3 -m pip install "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
 
 
