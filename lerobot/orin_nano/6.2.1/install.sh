@@ -35,6 +35,14 @@ if [ ! -d "$MINI" ]; then
 fi
 source "$MINI/etc/profile.d/conda.sh"
 
+# set -e 対策で || true を付けて、既に同意済みでも落ちないようにする
+if command -v conda >/dev/null 2>&1; then
+  if conda tos --help >/dev/null 2>&1; then
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main || true
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r || true
+  fi
+fi
+
 # ~/.bashrc に一度だけ lerobot 環境の自動有効化を追記
 LERO_TAG="### lerobot auto-activate (robot script)"
 grep -qxF "$LERO_TAG" "$HOME/.bashrc" || cat >>"$HOME/.bashrc" <<'BASHRC'
@@ -50,9 +58,6 @@ BASHRC
 source "$HOME/.bashrc"
 
 eval "$(conda shell.bash hook)"
-
-conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
-conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
 conda create -y -n lerobot python=3.10
 conda activate lerobot
@@ -74,19 +79,43 @@ pip3 install --upgrade pip wheel
 # (PyTorch 系は NumPy<2 が必須)
 pip3 install "numpy<2" --no-cache-dir
 
-# --- JetPack 6.2 用 GPU wheel (2.5.0 固定) ---
-pip3 uninstall -y torch torchvision || true 
+# --- JetPack 6.2.1 用 GPU wheel（URL内hashを固定しない） ---
+pip3 uninstall -y torch torchvision || true
 
-# -- Torch 2.8.0
-wget -O "$TMP/torch-2.8.0-cp310-cp310-linux_aarch64.whl" \
-  "https://pypi.jetson-ai-lab.io/jp6/cu126/+f/62a/1beee9f2f1470/torch-2.8.0-cp310-cp310-linux_aarch64.whl#sha256=62a1beee9f2f147076a974d2942c90060c12771c94740830327cae705b2595fc"
-python3 -m pip install "$TMP/torch-2.8.0-cp310-cp310-linux_aarch64.whl"
+JETSON_INDEX_URL="https://pypi.jetson-ai-lab.io/jp6/cu126"
+TORCH_VER="2.8.0"
+TV_VER="0.23.0"
 
-# -- Torchvision 0.23.0
-wget -O "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl" \
-  "https://pypi.jetson-ai-lab.io/jp6/cu126/+f/907/c4c1933789645/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl#sha256=907c4c1933789645ebb20dd9181d40f8647978e6bd30086ae7b01febb937d2d1"
-python3 -m pip install "$TMP/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl"
+# 1) index から該当 wheel をダウンロード（hash/path は index 側から解決される）
+python3 -m pip download \
+  --no-deps \
+  --only-binary=:all: \
+  --no-cache-dir \
+  --index-url "$JETSON_INDEX_URL" \
+  -d "$TMP" \
+  "torch==${TORCH_VER}" "torchvision==${TV_VER}"
 
+# 2) 落ちてきた wheel を特定
+TORCH_WHL="$(find "$TMP" -maxdepth 1 -type f -name "torch-${TORCH_VER}-*-linux_aarch64.whl" | sort | head -n 1)"
+TV_WHL="$(find "$TMP" -maxdepth 1 -type f -name "torchvision-${TV_VER}-*-linux_aarch64.whl" | sort | head -n 1)"
+
+[ -n "$TORCH_WHL" ] || { echo "❌ torch wheel not found in $TMP" >&2; exit 1; }
+[ -n "$TV_WHL" ] || { echo "❌ torchvision wheel not found in $TMP" >&2; exit 1; }
+
+# 3) sha256 を“実行時に”計算（＝動的生成）
+TORCH_SHA="$(sha256sum "$TORCH_WHL" | awk '{print $1}')"
+TV_SHA="$(sha256sum "$TV_WHL" | awk '{print $1}')"
+
+echo "torch wheel sha256      : $TORCH_SHA"
+echo "torchvision wheel sha256: $TV_SHA"
+
+# （任意）Jetson AI Lab の +f URL 形式（例と同じ規則）を“実行時に生成”して表示
+# ※ このURL形式が将来変わる可能性はあるので「表示だけ」に留めるのが無難です
+echo "torch direct-url (generated): ${JETSON_INDEX_URL}/+f/${TORCH_SHA:0:3}/${TORCH_SHA:3:13}/$(basename "$TORCH_WHL")#sha256=${TORCH_SHA}"
+echo "tv    direct-url (generated): ${JETSON_INDEX_URL}/+f/${TV_SHA:0:3}/${TV_SHA:3:13}/$(basename "$TV_WHL")#sha256=${TV_SHA}"
+
+# 4) ローカル wheel からインストール（依存は通常通り PyPI から入る）
+python3 -m pip install "$TORCH_WHL" "$TV_WHL"
 
 # Dynamixel SDK
 pip3 install dynamixel-sdk
