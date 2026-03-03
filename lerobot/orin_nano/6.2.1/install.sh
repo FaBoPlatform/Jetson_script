@@ -149,6 +149,10 @@ PY
 
 echo "✅ Installation completed."
 
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo npm install -g @anthropic-ai/claude-code
+
 rm -rf "$TMP"
 
 # USB Speakerの認識
